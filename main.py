@@ -28,7 +28,7 @@ class Message(BaseModel):
 
 @app.post("/chat")
 def chat(data: Message):
-    model_endpoint = "projects/591572092311/locations/us-central1/endpoints/7091058900539015168"
+    model_endpoint = "projects/591572092311/locations/us-central1/models/2136728225257095168"
 
     config = types.GenerateContentConfig(
         temperature=0.3,
