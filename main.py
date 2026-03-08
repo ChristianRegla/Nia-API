@@ -5,7 +5,13 @@ from google.genai import types
 import os
 import json
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "nia-from-zenia-488714-f8835c2061d2.json"
+render_path = "/etc/secrets/nia-from-zenia-488714-f8835c2061d2.json"
+local_path = "nia-from-zenia-488714-f8835c2061d2.json"
+
+if os.path.exists(render_path):
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = render_path
+else:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_path
 
 app = FastAPI()
 
