@@ -31,9 +31,9 @@ def chat(data: Message):
     model_endpoint = "projects/591572092311/locations/us-central1/models/2136728225257095168"
 
     config = types.GenerateContentConfig(
-        temperature=0.3,
-        top_p=1,
-        max_output_tokens=65535,
+        temperature=0.7,
+        top_p=0.95,
+        max_output_tokens=1024,
         response_mime_type="application/json",
         response_schema={
             "type": "OBJECT",
@@ -45,10 +45,7 @@ def chat(data: Message):
                 "mensaje_nia": {"type": "STRING"}
             },
             "required": ["trigger", "mensaje_nia"]
-        },
-        thinking_config=types.ThinkingConfig(
-            thinking_budget=-1,
-        ),
+        }
     )
 
     contents = [
