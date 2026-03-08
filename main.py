@@ -64,7 +64,7 @@ def chat(data: Message):
             contents=contents,
             config=config,
         )
-
+        print(f"Respuesta de la IA: {response.text}")
         return json.loads(response.text)
 
     except Exception as e:
