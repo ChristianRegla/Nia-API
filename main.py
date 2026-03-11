@@ -9,6 +9,8 @@ import firebase_admin
 from firebase_admin import auth, credentials
 import resend
 
+fb_admin_path = "/etc/secrets/firebase-admin-key.json"
+
 render_path = "/etc/secrets/nia-from-zenia-488714-f8835c2061d2.json"
 local_path = "nia-from-zenia-488714-f8835c2061d2.json"
 
@@ -17,8 +19,11 @@ if os.path.exists(render_path):
 else:
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = local_path
 
-if not firebase_admin.get_app:
-    cred = credentials.Certificate(os.environ["GOOGLE_APPLICATION_CREDENTIALS"])
+try:
+    firebase_admin.get_app()
+except ValueError:
+    path = fb_admin_path if os.path.exists(fb_admin_path) else "firebase-admin-key.json"
+    cred = credentials.Certificate(path)
     firebase_admin.initialize_app(cred)
 
 resend.api_key = os.getenv("RESEND_API_KEY")
