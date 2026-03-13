@@ -128,7 +128,7 @@ def send_verification(data: EmailRequest):
                     <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
 
                         <div style="background-color: #f8f9fa; padding: 30px; text-align: center; border-bottom: 1px solid #eeeeee;">
-                            <img src="{logo_url}" alt="ZenIA Logo" style="max-width: 120px; height: auto;">
+                            <img src="{logo_url}" alt="ZenIA Logo" style="max-width: 120px; height: auto; border-radius: 24px;">
                         </div>
 
                         <div style="padding: 40px 30px;">
