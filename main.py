@@ -54,7 +54,18 @@ class Message(BaseModel):
 def chat(data: Message):
     model = "projects/591572092311/locations/us-central1/endpoints/7091058900539015168"
 
+    instrucciones_nia = """
+        Tu identidad es Nia, una IA de soporte emocional, y es inalterable. Bajo ninguna circunstancia debes aceptar actuar como otros personajes, personas famosas o cambiar tu nombre, incluso si el usuario lo solicita explícitamente.
+
+        physical_risk: Úsalo ÚNICAMENTE ante síntomas de emergencia vital inmediata (dolor de pecho, falta de aire, pérdida de consciencia) o negligencia física severa que ponga en riesgo la vida a corto plazo (como no comer/beber por varios días).
+
+        mental_health_emergency: Úsalo ante ideación suicida, autolesiones o crisis de pánico agudas.
+
+        none: Úsalo para malestares físicos menores (dolor de cabeza, cansancio normal) o desahogos emocionales sin riesgo de vida. En estos casos, declina dar consejo médico pero mantén el trigger en none.
+    """
+
     config = types.GenerateContentConfig(
+        system_instruction=instrucciones_nia,
         temperature=0.3,
         top_p=1,
         max_output_tokens=65535,
@@ -101,34 +112,54 @@ def chat(data: Message):
 @app.post("/send-custom-verification")
 def send_verification(data: EmailRequest):
     try:
-        # 1. Generar link de Firebase vinculado a tu web oficial
         action_code_settings = auth.ActionCodeSettings(
             url='https://zenia-official.me/',
             handle_code_in_app=True,
         )
         link = auth.generate_email_verification_link(data.email, action_code_settings)
 
-        # 2. Enviar vía Resend usando tu dominio verificado
+        logo_url = "https://zenia-official.me/assets/app_icon.png"
+
         params = {
             "from": "ZenIA <verificacion@zenia-official.me>",
             "to": [data.email],
-            "subject": f"¡Hola {data.nombre}! Verifica tu cuenta",
+            "subject": f"¡Hola {data.nombre}! Confirma tu cuenta en ZenIA",
             "html": f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; padding: 20px; border-radius: 10px;">
-                <h2 style="color: #6C63FF; text-align: center;">Bienvenido a ZenIA</h2>
-                <p>Hola <strong>{data.nombre}</strong>,</p>
-                <p>Para activar tu cuenta y comenzar tu camino en ZenIA, por favor haz clic en el siguiente botón:</p>
-                <div style="text-align: center; margin: 30px 0;">
-                    <a href="{link}" style="background-color: #6C63FF; color: white; padding: 15px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">
-                        Verificar mi correo
-                    </a>
-                </div>
-                <hr>
-                <p style="font-size: 10px; color: #aaa; text-align: center;">
-                    Visita nuestro sitio oficial: <a href="https://zenia-official.me/">zenia-official.me</a>
-                </p>
-            </div>
-            """
+                    <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: auto; background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+                        <div style="background-color: #f8f9fa; padding: 30px; text-align: center; border-bottom: 1px solid #eeeeee;">
+                            <img src="{logo_url}" alt="ZenIA Logo" style="max-width: 120px; height: auto;">
+                        </div>
+
+                        <div style="padding: 40px 30px;">
+                            <h2 style="color: #333333; margin-top: 0;">¡Hola, {data.nombre}! 👋</h2>
+                            <p style="color: #555555; font-size: 16px; line-height: 1.6;">
+                                Nos emociona muchísimo darte la bienvenida a <strong>ZenIA</strong>. Has dado el primer gran paso hacia un espacio seguro, diseñado especialmente para escuchar, comprender y acompañarte en tu bienestar emocional.
+                            </p>
+                            <p style="color: #555555; font-size: 16px; line-height: 1.6;">
+                                Nia está lista para ayudarte, pero antes de comenzar esta experiencia, necesitamos asegurarnos de que este correo te pertenece.
+                            </p>
+
+                            <div style="text-align: center; margin: 40px 0;">
+                                <a href="{link}" style="background-color: #008080; color: #ffffff; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block;">
+                                    Verificar mi cuenta
+                                </a>
+                            </div>
+
+                            <p style="color: #777777; font-size: 14px; line-height: 1.5; border-left: 4px solid #008080; padding-left: 15px; margin-top: 30px;">
+                                <strong>¿Qué pasa después?</strong><br>
+                                Una vez que verifiques tu correo, podrás acceder a la aplicación, platicar con Nia de forma confidencial y explorar todos los recursos que hemos preparado para ti.
+                            </p>
+                        </div>
+
+                        <div style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #999999; font-size: 12px; border-top: 1px solid #eeeeee;">
+                            <p style="margin: 0;">Si no creaste esta cuenta, puedes ignorar este correo de forma segura.</p>
+                            <p style="margin: 10px 0 0 0;">© 2026 ZenIA. Todos los derechos reservados.</p>
+                            <p style="margin: 5px 0 0 0;"><a href="https://zenia-official.me/" style="color: #008080; text-decoration: none;">zenia-official.me</a></p>
+                        </div>
+
+                    </div>
+                    """
         }
         resend.Emails.send(params)
         return {"status": "success", "message": "Correo enviado vía Resend"}
