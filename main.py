@@ -50,11 +50,15 @@ class EmailRequest(BaseModel):
 class ResetRequest(BaseModel):
     email: str
 
-class Message(BaseModel):
-    message: str
+class ChatMessage(BaseModel):
+    role: str
+    text: str
+
+class ChatRequest(BaseModel):
+    history: list[ChatMessage]
 
 @app.post("/chat")
-def chat(data: Message):
+def chat(data: ChatRequest):
     model = "projects/591572092311/locations/us-central1/endpoints/7091058900539015168"
 
     instrucciones_nia = """
@@ -89,12 +93,14 @@ def chat(data: Message):
         ),
     )
 
-    contents = [
-        types.Content(
-            role="user",
-            parts=[types.Part.from_text(text=data.message)]
+    contents = []
+    for msg in data.history:
+        contents.append(
+            types.Content(
+                role=msg.role,
+                parts=[types.Part.from_text(text=msg.text)]
+            )
         )
-    ]
 
     try:
         response = client.models.generate_content(
