@@ -57,6 +57,10 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     history: list[ChatMessage]
 
+@app.get("/wakeup")
+def wakeup():
+    return {"status": "awake", "message:" "Render está activo"}
+
 @app.post("/chat")
 def chat(data: ChatRequest):
     model = "projects/591572092311/locations/us-central1/endpoints/7091058900539015168"
