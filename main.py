@@ -59,7 +59,7 @@ class ChatRequest(BaseModel):
 
 @app.get("/wakeup")
 def wakeup():
-    return {"status": "awake", "message:" "Render está activo"}
+    return {"status": "awake", "message": "Render está activo"}
 
 @app.post("/chat")
 def chat(data: ChatRequest):
