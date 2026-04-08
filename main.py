@@ -56,6 +56,7 @@ class ChatMessage(BaseModel):
 
 class ChatRequest(BaseModel):
     history: list[ChatMessage]
+    health_context: str | None = None
 
 @app.get("/wakeup")
 def wakeup():
@@ -77,6 +78,17 @@ def chat(data: ChatRequest):
 
         Solo cuenta historias o metáforas si el usuario lo pide explícitamente y manténlas bajo las 150 palabras.
     """
+
+    if data.health_context:
+        instrucciones_nia += f"""\n\nCONTEXTO BIOLÓGICO DE FONDO (Opcional):
+            A continuación tienes algunos datos físicos actuales del usuario: {data.health_context}.
+
+            REGLAS ESTRICTAS PARA USAR ESTOS DATOS:
+            1. Uso natural: Considera estos datos solo como un contexto silencioso para entender mejor al usuario. NO es obligatorio mencionarlos en tu respuesta.
+            2. Cero repetición: No bases cada una de tus respuestas en estos datos. Úsalos solo si aportan valor real a la conversación actual (ej. si el usuario está muy ansioso y ves que durmió muy poco, puedes sugerir descansar).
+            3. Regla de invisibilidad: NUNCA reveles tus fuentes. ESTÁ PROHIBIDO usar frases como "Según tus datos", "Veo en tu reloj", "Basado en tu ritmo cardíaco" o "Tus registros indican". Haz que suene como una observación empática y humana (ej. "A veces, cuando no descansamos lo suficiente, es normal sentirnos abrumados...").
+            4. Cero diagnósticos: No actúes como médico. No intentes diagnosticar problemas de salud basándote en estos números.
+            """
 
     config = types.GenerateContentConfig(
         system_instruction=instrucciones_nia,
